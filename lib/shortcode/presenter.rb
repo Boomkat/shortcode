@@ -9,7 +9,7 @@ class Shortcode::Presenter
 
     def register(presenter)
       validate presenter
-      [*presenter.for].each { |k| presenters[k.to_sym] = presenter }
+      [*presenter.for].each { |k| presenters[k.to_sym] = presenter.to_s }
     end
 
     def validate(presenter)
@@ -40,9 +40,10 @@ class Shortcode::Presenter
 
     def initialize_custom_presenter(name)
       if Shortcode::Presenter.presenters.has_key? name.to_sym
-        presenter   = Shortcode::Presenter.presenters[name.to_sym].new(@attributes, @content, @additional_attributes)
-        @attributes = presenter.attributes
-        @content    = presenter.content
+        presenter_class = Object.const_get(Shortcode::Presenter.presenters[name.to_sym])
+        presenter       = presenter_class.new(@attributes, @content, @additional_attributes)
+        @attributes     = presenter.attributes
+        @content        = presenter.content
       end
     end
 
